@@ -28,17 +28,29 @@ sumSWeights = np.sum(weights[sSelector])
 sumBWeights = np.sum(weights[bSelector])
 
 print numFeatures
-# Plot Weights
+print xs
+
 #for i in range(numFeatures):
-i=0
-plt.figure()
-Data = np.array([float(row[i]) for row in xs])
-sWeights = np.array(weights[sSelector])
-bWeights = np.array(weights[bSelector])
-bData = np.array(Data[bSelector])
-sData = np.array(Data[sSelector])
-plt.hist(sData,bins = "sqrt", normed = True, histtype = "step", label="H")
-plt.hist(bData,bins = "sqrt", normed = True, histtype = "step", label="Noise")
-plt.title(str(all[0][i+1]))
-plt.legend()
-plt.show()
+	#for j in range(0,len(xs[1:i])):
+		##if xs[i,j]<=-999:
+			#print xs[i,j]	
+			#xs = np.delete(xs, [i,j])
+#xs =xs[(xs >= -999) ]
+
+
+# Plot Weights
+for i in range(numFeatures):
+	plt.figure()
+	Data = np.array([float(row[i]) for row in xs])
+	sWeights = np.array(weights[sSelector])
+	bWeights = np.array(weights[bSelector])
+	bData = np.array(Data[bSelector])
+	sData = np.array(Data[sSelector])
+	bData = bData[(bData >= -900)]
+	sData = sData[(sData >= -900)]
+	plt.hist(bData,bins = "sqrt", normed = True, histtype = "step", label="Noise")
+	plt.hist(sData,bins = "sqrt", normed = True, histtype = "step", label="H")
+	plt.title(str(all[0][i+1]))
+	plt.legend()
+	plt.savefig(str(all[0][i+1]))
+
