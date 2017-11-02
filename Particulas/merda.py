@@ -52,124 +52,107 @@ sumWeights = np.sum(weights)
 sumSWeights = np.sum(weights[sSelector])
 sumBWeights = np.sum(weights[bSelector])
 
-for i in range(numFeatures):
-    plt.figure()
-    Data = np.array([float(row[i]) for row in xs])
-    sWeights = np.array(weights[sSelector])
-    bWeights = np.array(weights[bSelector])
-    bData = np.array(Data[bSelector])
-    sData = np.array(Data[sSelector])
+
+# Plot Weights
+#for i in range(numFeatures
+i=0
+plt.figure()
+Data = np.array([float(row[i]) for row in xs])
+sWeights = np.array(weights[sSelector])
+bWeights = np.array(weights[bSelector])
+bData = np.array(Data[bSelector])
+sData = np.array(Data[sSelector])
+bData = bData[(bData >= -900)]
+sData = sData[(sData >= -900)]
+#plt.hist(bData,bins = "sqrt", normed = True, histtype = "step", label="Noise")
+#plt.hist(sData,bins = "sqrt", normed = True, histtype = "step", label="H")
+#plt.xlim(0,300)
+#plt.title(str(all[0][i+1]))
+#plt.legend()
+#plt.savefig(str(all[0][i+1]))
+#plt.show()
 
 
-    # # Decorrelation test 1
-# 
-# Description: performs standardization + PCA on the input data as a whole and runs it through the MVA
-# 
-# Results: Performance is tremendously increased, reaching very close to saturation (ROC AUC ~ 0.9999) for the worst case scenario (fully hadronic decay).
-# 
-# Method is applicable to real data (see Decorrelation tests 4 & 5)
-# 
-
-### Import modules
 
 
-from rep.estimators import XGBoostClassifier
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-import root_pandas
-from root_pandas import read_root
-import math
-from sklearn.decomposition import PCA as sklearnPCA
-from sklearn.preprocessing import StandardScaler
-from sklearn.cross_validation import train_test_split, cross_val_score
-from sklearn.metrics import roc_curve, roc_auc_score
-import time
+# In[42]:
 
-### Import data
-
-signalData = bData
-backgroundData = sData
-print "Samples contains", len(signalData), "signal events and", len(backgroundData), "background events"
-print len(signalData)+len(backgroundData), "events in total"
+test = list(csv.reader(open("test.csv", "rb"),delimiter=','))
+xsTest = np.array([map(float, row[1:]) for row in test[1:]])
 
 
-### Add classification targets and combine into single dataset
-
-signalData["target"] = 1
-backgroundData["target"] = 0
-data = signalData.append(backgroundData, ignore_index = True)
-
-gencols = [gen for gen in signalData.columns if str.startswith(gen, "gen")]
-data.drop(gencols,axis = 1,inplace=True)
-# removes the generator level variables, used to train a regression algorithm
+# In[43]:
+#DataTest = np.array([float(row[i]) for row in xsTest])
+testIds = np.array([int(row[0]) for row in test[1:]])
 
 
-### Standardize input data
-
-allFeatures = data.columns-["target"]
-#ignores the target variable 
-
-data_std = StandardScaler().fit_transform(data.ix[:,0:len(allFeatures)].values)
-#standardizes input data for all variables
 
 
-### Perform principal component analysis
+# Computing the scores.
 
-ncomp = len(allFeatures)
-sklearn_pca = sklearnPCA(n_components = ncomp)
-# initiates an instance of a PCA -> dimension of sub-space is the same as the original space
+# In[44]:
 
-pcaaux = sklearn_pca.fit_transform(data_std)
-"""
-Fits the PCA (finds the n orthogonal vectors that represent the directions of maximum variance in the data) 
-and projects the original dataset in the new axes (transform)
-"""
-
-cols = ["var" + str(i) for i in range(0,ncomp)]
-pcadf = pd.DataFrame(np.float64(pcaaux),index=data.index,columns=cols)
-pcadf = pd.concat([pcadf, data['target']], axis=1)
-# transforms the NumPy array output from PCA into a Pandas dataframe (ease of use)
+#aux= random.sample(1,550000)
+#testScores= np.array([random.sample(xrange(1,550000), len(xsTest))])
+#testScores = np.array([random.randint(1,550000) for x in xsTest])
 
 
-### Define classifier
+#random.shuffle(testScores)
 
-xgbc = XGBoostClassifier()
+#data = range(1, 550001)
+#print len(data)
+#random.shuffle(data)
 
+	
 
-### Cross validation
-
-# Runs many training loops and outputs mean score and uncertainty; shows whether your sweet new high-level variable actually makes a difference
-
-start = time.time()
-varnames = [var for var in pcadf.columns if var != 'target']
-print varnames
-xgbcCV = cross_val_score(xgbc, pcadf[varnames].astype(np.float64), 
-                         pcadf["target"].astype(np.bool), cv=4, scoring="roc_auc")
-print "ROC AUC: {:.4f} (+/- {:.4f})".format(xgbcCV.mean(), xgbcCV.std()/math.sqrt(len(xgbcCV)))
-print "Cross-validation took {:.3f}s ".format(time.time() - start)
+testScores = np.zeros(len(test))
+for i in range(len(test)):
+	if test[i]>=900:
+		testScores[testIds[i]]=0
+	else:
+		testScores[testIds[i]]=1
 
 
-### Randomly split data into training and validation samples
+#a = range(1,500000)
+#random.shuffle(a)
+#testScores=np.array([aux for x in xsTest])
 
-trainData, valData = train_test_split(pcadf, random_state=11, train_size=0.5)
+# Computing the rank order.
+
+# In[45]:
+
+testInversePermutation = testScores.argsort()
 
 
-### Train classifier
+# In[46]:
 
-start = time.time()
-xgbc.fit(trainData[varnames].astype(np.float64), trainData.target.astype(np.bool))
-print "Fitting took {:.3f}s ".format(time.time() - start) 
+testPermutation = list(testInversePermutation)
+for tI,tII in zip(range(len(testInversePermutation)),
+                  testInversePermutation):
+    testPermutation[tII] = tI
 
 
-### Test response on validation data and print ROC AUC
+threshold1=95
+threshold2=165
 
-probVal = xgbc.predict_proba(valData[varnames].astype(np.float64))
-area = roc_auc_score(valData.target, probVal[:, 1])
-print "ROC AUC", area
-plt.figure(figsize=[8, 8])
-plt.plot(*roc_curve(valData.target, probVal[:, 1])[:2], label='Validation')
-plt.plot([0, 1], [0, 1], 'k--', label='No discrimination')
-plt.xlabel('Background acceptance'), plt.ylabel('Signal acceptance')
-plt.legend(loc='best')
-plt.show()
+# Computing the submission file with columns EventId, RankOrder, and Class.
+#str(testPermutation[tI]+1)
+#
+# In[47]:
+
+submission = np.array([[str(testIds[tI]),str(data[tI]),
+                       's' if testScores[tI] >= threshold1 else 'b'] 
+            for tI in range(len(testIds))])
+
+
+# In[48]:
+
+submission = np.append([['EventId','RankOrder','Class']],
+                        submission, axis=0)
+
+
+# Saving the file that can be submitted to Kaggle.
+
+# In[49]:
+
+np.savetxt("submission2.csv",submission,fmt='%s',delimiter=',')

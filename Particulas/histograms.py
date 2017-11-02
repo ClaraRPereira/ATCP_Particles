@@ -31,7 +31,7 @@ print numFeatures
 
 # Plot Weights
 #for i in range(numFeatures
-i=0
+i=4
 plt.figure()
 Data = np.array([float(row[i]) for row in xs])
 sWeights = np.array(weights[sSelector])
@@ -42,7 +42,7 @@ bData = bData[(bData >= -900)]
 sData = sData[(sData >= -900)]
 plt.hist(bData,bins = "sqrt", normed = True, histtype = "step", label="Noise")
 plt.hist(sData,bins = "sqrt", normed = True, histtype = "step", label="H")
-plt.xlim(0,300)
+plt.xlim(0,10)
 plt.title(str(all[0][i+1]))
 plt.legend()
 #plt.savefig(str(all[0][i+1]))
