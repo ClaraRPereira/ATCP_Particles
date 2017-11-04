@@ -58,10 +58,7 @@ feature_importance = gbc.feature_importances_
 feature_importance = 100.0 * (feature_importance / feature_importance.max())
 sorted_idx = np.argsort(feature_importance)
 pos = np.arange(sorted_idx.shape[0]) + .5
-#plt.subplot(1, 2, 2)
 plt.barh(pos, feature_importance[sorted_idx], align='center')
-#plt.yticks(pos, data_train.feature_names[sorted_idx])
-#plt.yticks(pos, data_train[0][sorted_idx+1])
 plt.yticks(pos, nomes[sorted_idx])
 plt.xlabel('Relative Importance')
 plt.title('Variable Importance')
