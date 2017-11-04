@@ -18,8 +18,7 @@ import math
 # Load training data
 print 'Loading training data.'
 data_train = np.loadtxt( 'training.csv', delimiter=',', skiprows=1, converters={32: lambda x:int(x=='s'.encode('utf-8')) } )
- 
- 
+
 nomes = ['DER_mass_MMC','DER_mass transverse_met_lep','DER_mass_vis','DER_pt_h','DER_deltaeta_jet_jet','DER_mass_jet_jet','DER_prodeta_jet_jet','DER_deltar_tau_lep','DER_pt_tot','DER_sum_pt','DER_pt_ratio_lep_tau','DER_met_phi_centrality','DER_lep_eta_centrality','PRI_tau_pt','PRI_tau_eta','PRI_tau_phi','PRI_lep_pt','PRI_lep_eta','PRI_lep_phi','PRI_met','PRI_met_phi','PRI_met_sumet','PRI_jet_num','PRI_jet_leading_pt','PRI_jet_leading_eta','PRI_jet_leading_phi','PRI_jet_subleading_pt','PRI_jet_subleading_eta','PRI_jet_subleading_phi','PRI_jet_all_pt'] 
 nomes = np.array(nomes)
 for i in range(0,len(nomes)): 
@@ -35,7 +34,6 @@ r =np.random.rand(data_train.shape[0])
 print 'Assigning data to numpy arrays.'
 
 # Split our data into training and test set.
-#X_train, X_valid, Y_train, Y_valid = train_test_split( data_train[:,1:31], data_train[:,32], test_size = 0.1, random_state = 100)
 # First 90% are training 
 Y_train = data_train[:,32][r<0.9]
 X_train = data_train[:,1:31][r<0.9]
@@ -47,7 +45,7 @@ W_valid = data_train[:,31][r>=0.9] # Extracting weights in training set
  
 # Train the GradientBoostingClassifier using our good features
 print 'Training classifier (this may take some time!)'
-gbc = GBC(n_estimators=50, max_depth=6,min_samples_leaf=200,max_features=30,verbose=1)
+gbc = GBC(learning_rate=0.1,n_estimators=50, max_depth=5,min_samples_leaf=200,max_features=30,verbose=1)
 gbc.fit(X_train,Y_train) 
 
 # #############################################################################
@@ -61,7 +59,9 @@ plt.barh(pos, feature_importance[sorted_idx], align='center')
 plt.yticks(pos, nomes[sorted_idx])
 plt.xlabel('Relative Importance')
 plt.title('Variable Importance')
+plt.savefig("FeatureImportance.png",format='png')
 plt.show()
+
 # ############################################################################# 
 
 # #############################################################################
@@ -69,42 +69,22 @@ plt.show()
 
 # compute validation set deviance
 test_score = np.zeros((50,), dtype=np.float64)
-for i, y_pred in enumerate(gbc.staged_predict(X_valid)):
+
+for i, y_pred in enumerate(gbc.staged_decision_function(X_valid)):
     test_score[i] = gbc.loss_(Y_valid, y_pred)
+    
 plt.title('Deviance')
 plt.plot(np.arange(50) + 1, gbc.train_score_, 'b-',label='Training Set Deviance')
 plt.plot(np.arange(50) + 1, test_score, 'r-',label='Validation Set Deviance')
 plt.legend(loc='upper right')
 plt.xlabel('Boosting Iterations')
 plt.ylabel('Deviance')
+plt.savefig("Deviance.png",format='png')
 plt.show()
-# #############################################################################
-
 
 # #############################################################################
-# Plot decision boundary
 
 
-
-#plot_step = 1
-#x_min, x_max =  0, 400
-#y_min, y_max =  0, 400
-#x_min, x_max = X_plot.min() - 1, X_plot.max() + 1
-#y_min, y_max = Y_plot.min() - 1, Y_plot.max() + 1
-
-#xx, yy = np.meshgrid(np.arange(x_min, x_max, plot_step),np.arange(y_min, y_max, plot_step))
-#plt.tight_layout(h_pad=0.5, w_pad=0.5, pad=2.5)
-#Z = gbc.predict_proba(X_valid)[:,1] 
-###Z = gbc.predict(np.c_[xx.ravel(), yy.ravel()])
-#Z = gbc.predict(np.c_[xx.ravel(), yy.ravel(), data_train[:,2:31].ravel()])
-#Z = Z.reshape(xx.shape)
-#cs = plt.contourf(xx, yy, Z, cmap=plt.cm.RdYlBu)
-#plt.show()
-
-#plt.scatter(X_valid[:,0],X_valid[:,1], alpha=.1, s=4)
-#plt.show()
-
-# ############################################################################# 
  
 # Get the probability output from the trained method, using the 10% for testing
 prob_predict_train = gbc.predict_proba(X_train)[:,1]
