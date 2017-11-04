@@ -2,6 +2,12 @@
 import random,string,math,csv
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+import sklearn.cluster as cluster
+import time
+
+sns.set(style="ticks", color_codes=True)
 
 
 ### Reading an formatting training data
@@ -27,24 +33,44 @@ sumWeights = np.sum(weights)
 sumSWeights = np.sum(weights[sSelector])
 sumBWeights = np.sum(weights[bSelector])
 
-print numFeatures
-
+print (numFeatures)
+np.random.seed(19680801)
 # Plot Weights
-#for i in range(numFeatures
-i=4
+#for i in range(numFeatures)
+i=1
 plt.figure()
 Data = np.array([float(row[i]) for row in xs])
 sWeights = np.array(weights[sSelector])
 bWeights = np.array(weights[bSelector])
 bData = np.array(Data[bSelector])
 sData = np.array(Data[sSelector])
-bData = bData[(bData >= -900)]
-sData = sData[(sData >= -900)]
-plt.hist(bData,bins = "sqrt", normed = True, histtype = "step", label="Noise")
-plt.hist(sData,bins = "sqrt", normed = True, histtype = "step", label="H")
-plt.xlim(0,10)
-plt.title(str(all[0][i+1]))
-plt.legend()
-#plt.savefig(str(all[0][i+1]))
-plt.show()
+#bData = bData[(bData >= -900)]
+#sData = sData[(sData >= -900)]
 
+j=13
+Data2 = np.array([float(row[j]) for row in xs])
+sWeights2 = np.array(weights[sSelector])
+bWeights2 = np.array(weights[bSelector])
+bData2 = np.array(Data2[bSelector])
+sData2 = np.array(Data2[sSelector])
+#bData2 = bData2[(bData2 >= -900)]
+#sData2 = sData2[(sData2 >= -900)]
+#plt.hist(bData,bins = "sqrt", normed = True, histtype = "step", label="Noise")
+#plt.hist(sData,bins = "sqrt", normed = True, histtype = "step", label="H")
+
+plt.title(str(all[0][i+1]+all[0][j+1]) )
+
+#plt.savefig(str(all[0][i+1]))
+
+
+
+s = 2
+
+plt.scatter(bData, bData2, color='r', s=s, alpha=.4, label="Noise")
+plt.scatter(sData, sData2, color='b', s=s, alpha=.4, label="H")
+plt.legend(prop={'size': 9})
+plt.xlim(0, 300)
+plt.ylim(0, 300)
+plt.savefig(str(all[0][i+1]+all[0][j+1]))
+
+plt.show()
