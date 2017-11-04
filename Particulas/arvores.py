@@ -47,7 +47,7 @@ W_valid = data_train[:,31][r>=0.9] # Extracting weights in training set
  
 # Train the GradientBoostingClassifier using our good features
 print 'Training classifier (this may take some time!)'
-gbc = GBC(n_estimators=100, max_depth=6,min_samples_leaf=200,max_features=30,verbose=1)
+gbc = GBC(n_estimators=50, max_depth=6,min_samples_leaf=200,max_features=30,verbose=1)
 gbc.fit(X_train,Y_train) 
 
 # #############################################################################
@@ -68,14 +68,12 @@ plt.show()
 # Plot training deviance
 
 # compute validation set deviance
-test_score = np.zeros((100,), dtype=np.float64)
+test_score = np.zeros((50,), dtype=np.float64)
 for i, y_pred in enumerate(gbc.staged_predict(X_valid)):
     test_score[i] = gbc.loss_(Y_valid, y_pred)
 plt.title('Deviance')
-plt.plot(np.arange(100) + 1, gbc.train_score_, 'b-',
-         label='Training Set Deviance')
-plt.plot(np.arange(100) + 1, test_score, 'r-',
-         label='Validation Set Deviance')
+plt.plot(np.arange(50) + 1, gbc.train_score_, 'b-',label='Training Set Deviance')
+plt.plot(np.arange(50) + 1, test_score, 'r-',label='Validation Set Deviance')
 plt.legend(loc='upper right')
 plt.xlabel('Boosting Iterations')
 plt.ylabel('Deviance')
@@ -86,8 +84,8 @@ plt.show()
 # #############################################################################
 # Plot decision boundary
 
-#X_plot = data_train[:,0][r<0.9]
-#Y_plot = data_train[:,2][r<0.9]
+
+
 #plot_step = 1
 #x_min, x_max =  0, 400
 #y_min, y_max =  0, 400
@@ -98,15 +96,14 @@ plt.show()
 #plt.tight_layout(h_pad=0.5, w_pad=0.5, pad=2.5)
 #Z = gbc.predict_proba(X_valid)[:,1] 
 ###Z = gbc.predict(np.c_[xx.ravel(), yy.ravel()])
+#Z = gbc.predict(np.c_[xx.ravel(), yy.ravel(), data_train[:,2:31].ravel()])
 #Z = Z.reshape(xx.shape)
 #cs = plt.contourf(xx, yy, Z, cmap=plt.cm.RdYlBu)
 #plt.show()
 
-
-#colors = ['b','r']
-
-#plt.scatter(X_valid[:,0],X_valid[:,2], alpha=.1, s=4)
+#plt.scatter(X_valid[:,0],X_valid[:,1], alpha=.1, s=4)
 #plt.show()
+
 # ############################################################################# 
  
 # Get the probability output from the trained method, using the 10% for testing
