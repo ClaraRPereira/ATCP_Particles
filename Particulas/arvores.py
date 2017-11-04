@@ -19,6 +19,13 @@ import math
 print 'Loading training data.'
 data_train = np.loadtxt( 'training.csv', delimiter=',', skiprows=1, converters={32: lambda x:int(x=='s'.encode('utf-8')) } )
  
+ 
+nomes = ['DER_mass_MMC','DER_mass transverse_met_lep','DER_mass_vis','DER_pt_h','DER_deltaeta_jet_jet','DER_mass_jet_jet','DER_prodeta_jet_jet','DER_deltar_tau_lep','DER_pt_tot','DER_sum_pt','DER_pt_ratio_lep_tau','DER_met_phi_centrality','DER_lep_eta_centrality','PRI_tau_pt','PRI_tau_eta','PRI_tau_phi','PRI_lep_pt','PRI_lep_eta','PRI_lep_phi','PRI_met','PRI_met_phi','PRI_met_sumet','PRI_jet_num','PRI_jet_leading_pt','PRI_jet_leading_eta','PRI_jet_leading_phi','PRI_jet_subleading_pt','PRI_jet_subleading_eta','PRI_jet_subleading_phi','PRI_jet_all_pt'] 
+nomes = np.array(nomes)
+for i in range(0,len(nomes)): 
+	print str(nomes[i])
+ 
+ 
 # Pick a random seed for reproducible results. Choose wisely!
 np.random.seed(42)
 # Random number for training/validation splitting
@@ -42,6 +49,25 @@ W_valid = data_train[:,31][r>=0.9] # Extracting weights in training set
 print 'Training classifier (this may take some time!)'
 gbc = GBC(n_estimators=50, max_depth=None,min_samples_leaf=200,max_features=30,verbose=1)
 gbc.fit(X_train,Y_train) 
+
+
+# #############################################################################
+# Plot feature importance
+feature_importance = gbc.feature_importances_
+# make importances relative to max importance
+feature_importance = 100.0 * (feature_importance / feature_importance.max())
+sorted_idx = np.argsort(feature_importance)
+pos = np.arange(sorted_idx.shape[0]) + .5
+#plt.subplot(1, 2, 2)
+plt.barh(pos, feature_importance[sorted_idx], align='center')
+#plt.yticks(pos, data_train.feature_names[sorted_idx])
+#plt.yticks(pos, data_train[0][sorted_idx+1])
+plt.yticks(pos, nomes[sorted_idx])
+plt.xlabel('Relative Importance')
+plt.title('Variable Importance')
+plt.show()
+# ############################################################################# 
+ 
  
 # Get the probability output from the trained method, using the 10% for testing
 prob_predict_train = gbc.predict_proba(X_train)[:,1]
@@ -111,6 +137,7 @@ for line in resultlist:
     theline = str(line[0])+','+str(line[1])+','+line[2]+'\n'
     fcsv.write(theline) 
 fcsv.close()
+<<<<<<< HEAD
 
 
 from matplotlib import pyplot as plt
@@ -174,3 +201,5 @@ for alabel in legend.get_texts():
   
 # Save the result to png
 plt.savefig("Sklearn_gbc.png")
+=======
+>>>>>>> fc7de953832db3ad1a8e8770bc3e98291ed651c7

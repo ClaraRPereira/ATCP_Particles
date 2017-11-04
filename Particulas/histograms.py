@@ -36,7 +36,7 @@ sumBWeights = np.sum(weights[bSelector])
 print (numFeatures)
 np.random.seed(19680801)
 # Plot Weights
-#for i in range(numFeatures
+#for i in range(numFeatures)
 i=1
 plt.figure()
 Data = np.array([float(row[i]) for row in xs])
@@ -57,14 +57,11 @@ sData2 = np.array(Data2[sSelector])
 #sData2 = sData2[(sData2 >= -900)]
 #plt.hist(bData,bins = "sqrt", normed = True, histtype = "step", label="Noise")
 #plt.hist(sData,bins = "sqrt", normed = True, histtype = "step", label="H")
-#plt.xlim(0,10)
+
 plt.title(str(all[0][i+1]+all[0][j+1]) )
 
 #plt.savefig(str(all[0][i+1]))
-#plt.show()
-#sns.set_context('poster')
-#sns.set_color_codes()
-#plot_kwds = {'alpha' : 0.25, 's' : 80, 'linewidths':1}
+
 
 
 s = 2
@@ -76,18 +73,4 @@ plt.xlim(0, 300)
 plt.ylim(0, 300)
 plt.savefig(str(all[0][i+1]+all[0][j+1]))
 
-#plt.scatter(xs.T[0], xs.T[1], c=colours, **plot_kwds)
-
-#tips= np.array([map(float, row[1:3]) for row in all[1:]])
-#iris = pd.read_csv('training.csv')
-#tips=float(tips)
-#sns.set(style="ticks")
-#np.random.seed(sum(map(ord, "axis_grids")))
-
-
-#g = sns.FacetGrid(int(tips), col="sex", hue="smoker")
-#g.map(plt.scatter, "total_bill", "tip", alpha=.7)
-#g.add_legend();
-#iris = sns.load_dataset(tips2)
-#g = sns.pairplot(iris, hue="species")
 plt.show()
