@@ -12,8 +12,10 @@ import random,string,math,csv
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.ensemble import GradientBoostingClassifier as GBC
+from sklearn.metrics import roc_curve
 from sklearn.cross_validation import train_test_split
 import math
+ 
  
 # Load training data
 print 'Loading training data.'
@@ -42,11 +44,16 @@ W_train = data_train[:,31][r<0.9]
 Y_valid = data_train[:,32][r>=0.9]  # Extracting s/b value
 X_valid = data_train[:,1:31][r>=0.9] # Extracting all feature values
 W_valid = data_train[:,31][r>=0.9] # Extracting weights in training set
+
+
+
  
 # Train the GradientBoostingClassifier using our good features
 print 'Training classifier (this may take some time!)'
 gbc = GBC(learning_rate=0.1,n_estimators=50, max_depth=5,min_samples_leaf=200,max_features=30,verbose=1)
 gbc.fit(X_train,Y_train) 
+
+
 
 # #############################################################################
 # Plot feature importance
@@ -66,7 +73,6 @@ plt.show()
 
 # #############################################################################
 # Plot training deviance
-
 # compute validation set deviance
 test_score = np.zeros((50,), dtype=np.float64)
 
@@ -82,7 +88,38 @@ plt.ylabel('Deviance')
 plt.savefig("Deviance.png",format='png')
 plt.show()
 
+
+
 # #############################################################################
+# ROC
+# The gradient boosted model by itself
+y_pred_gbc = gbc.predict_proba(X_valid)[:, 1]
+fpr_gbc, tpr_gbc, _ = roc_curve(Y_valid, y_pred_gbc)
+
+plt.figure(1)
+plt.plot([0, 1], [0, 1], 'k--')
+plt.plot(fpr_gbc, tpr_gbc, label='GBC')
+plt.xlabel('False positive rate')
+plt.ylabel('True positive rate')
+plt.title('ROC curve')
+plt.savefig("ROC_curve.png",format='png')
+plt.show()
+
+# #############################################################################
+
+
+
+
+
+# ############################################################################# 
+
+
+
+
+
+
+
+
 
 
  
