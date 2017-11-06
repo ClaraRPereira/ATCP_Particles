@@ -1,4 +1,3 @@
- 
 train_data <- read.csv(file="training.csv")
 train_data$EventId <- NULL
 train_data$Label <- NULL
@@ -8,8 +7,4 @@ cMatrix <- cor(train_data)
 pdf(file="matriz_correlacao__.pdf")
 corrplot(cMatrix, method="square",type="upper",tl.col="black",diag=FALSE)
 dev.off()
-pdf(file="matriz_correlacao_hierarquia__.pdf")
-corrplot(cMatrix, method="square",type="upper",order="hclust",tl.col="black",diag=FALSE)
-dev.off()
-
 
