@@ -213,6 +213,7 @@ xsTest = np.array([map(float, row[1:]) for row in test[1:]])
 # In[43]:
 DER_M_MMC =np.array([float(row[0]) for row in xsTest])
 DER_MT_MET_LEP =np.array([float(row[1]) for row in xsTest])
+DER_M_vis =np.array([float(row[2]) for row in xsTest])
 DER_deltaeta_jj =np.array([float(row[4]) for row in xsTest])
 testIds = np.array([int(row[0]) for row in test[1:]])
 
@@ -238,7 +239,7 @@ print len(testIds)
 
 testScores = np.zeros(len(DER_M_MMC))
 for i in range(1,len(DER_M_MMC)):
-	if DER_M_MMC[i]>=95 and DER_M_MMC[i]<=165 and DER_MT_MET_LEP[i] >=0 and DER_MT_MET_LEP[i]<=60 :
+	if DER_M_MMC[i]>=95 and DER_M_MMC[i]<=165 and DER_MT_MET_LEP[i] >=0 and DER_MT_MET_LEP[i]<=60 and DER_M_vis[i]>35 and DER_M_vis[i]<120:
 		testScores[i]=1
 	else:
 		testScores[i]=0
@@ -293,10 +294,10 @@ submission = np.append([['EventId','RankOrder','Class']],
 
 # In[49]:
 
-np.savetxt("submission2.csv",submission,fmt='%s',delimiter=',')
+np.savetxt("submissionCut.csv",submission,fmt='%s',delimiter=',')
 
 
-check_submission("submission2.csv",550000)
+check_submission("submissionCut.csv",550000)
 # Saving the file that can be submitted to Kaggle.
 
 
