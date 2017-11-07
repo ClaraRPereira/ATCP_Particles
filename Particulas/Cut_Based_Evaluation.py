@@ -43,7 +43,7 @@ TN = np.zeros(len(Y_valid))
 
 
 for i in range(0,len(Y_valid)):
-	if X_valid[i,0] >= 95 and X_valid[i,0] <= 165 and X_valid[i,1] >= 0 and X_valid[i,1] <= 60:
+	if X_valid[i,0] >= 95 and X_valid[i,0] <= 165 and X_valid[i,1] >= 0 and X_valid[i,1] <= 60 and X_valid[i,2] >= 35 and X_valid[i,2] <= 120:	
 		Y_pred[i]=1
 	else:	
 		Y_pred[i]=0	
